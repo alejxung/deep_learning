@@ -10,7 +10,7 @@ def activate(inputs, weights):
     for x, w in zip(inputs, weights):
         h += x*w
 
-    # perform ent activation
+    # perform net activation
     return sigmoid(h)
 
 if __name__ == "__main__":
