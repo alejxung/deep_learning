@@ -10,6 +10,7 @@ catdog/
 *.jpg 
 *.png
 *.docx
+*.pickle
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
