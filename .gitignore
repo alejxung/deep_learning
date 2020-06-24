@@ -1,7 +1,15 @@
+.vscode
+
 # Genres
 genres/
 .wav
 *.mf
+
+# CatDog
+catdog/
+*.jpg 
+*.png
+*.docx
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
