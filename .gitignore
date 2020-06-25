@@ -11,6 +11,7 @@ dogcat/
 *.png
 *.docx
 *.pickle
+logs/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
