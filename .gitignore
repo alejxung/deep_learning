@@ -6,7 +6,7 @@ genres/
 *.mf
 
 # CatDog
-catdog/
+dogcat/
 *.jpg 
 *.png
 *.docx
