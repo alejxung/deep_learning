@@ -1,7 +1,10 @@
 .vscode
+.gitignore
+*.json
 
 # Genres
 genres/
+genre_dataset_reduced/
 .wav
 *.mf
 
