@@ -7,7 +7,7 @@ import cv2
 import random
 import pickle
 
-DATADIR = "./dogcat/PetImages"
+DATADIR = "./dogcat_data/PetImages"
 CATEGORIES = ["Dog", "Cat"]
 IMG_SIZE = 50
 

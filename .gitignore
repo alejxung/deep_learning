@@ -9,7 +9,7 @@ genre_dataset_reduced/
 *.mf
 
 # CatDog
-dogcat/
+dogcat_data/
 *.jpg 
 *.png
 *.docx
