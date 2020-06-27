@@ -19,6 +19,7 @@ logs/
 
 # Crypto
 crypto_data/
+models/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

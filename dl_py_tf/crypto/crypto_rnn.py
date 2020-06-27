@@ -1,15 +1,21 @@
-#%%
-
 import pandas as pd
 import os
 import numpy as np
 import random
 from sklearn import preprocessing
 from collections import deque
+import time
+import tensorflow as tf 
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, LSTM, BatchNormalization
+from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 
 SEQ_LENGTH = 60
 FUTURE_PERIOD_PREDICT = 3
-RATIO_TO_PREDICT = "LTC-USD"
+RATIO_TO_PREDICT = "ETH-USD" # ["BTC-USD", "LTC-USD", "ETH-USD", "BCH-USD"]
+BATCH_SIZE = 64
+EPOCHS = 10
+NAME = "{}-{}-SEQ-{}-PRED-{}".format(RATIO_TO_PREDICT, SEQ_LENGTH, FUTURE_PERIOD_PREDICT, int(time.time()))
 
 def classify(current, future):
     if float(future) > float(current):
@@ -68,8 +74,6 @@ def preprocess_df(df):
         
     return np.array(x), y
 
-
-
 main_df = pd.DataFrame()
 
 ratios = ["BTC-USD", "LTC-USD", "ETH-USD", "BCH-USD"]
@@ -101,6 +105,44 @@ main_df = main_df[(main_df.index < last_5pct)]
 x_train, y_train = preprocess_df(main_df)
 x_validation, y_validation = preprocess_df(validation_main_df)
 
+x_train = np.asarray(x_train)
+y_train = np.asarray(y_train)
+x_validation = np.asarray(x_validation)
+y_validation = np.asarray(y_validation)
+
+
+
 print("train data: {}, validation: {}".format(len(x_train), len(x_validation)))
-print("Dont buys: {}, buys: {}".format(y_train.count(0), y_train.count(1)))
-print("VALIDATION Dont buys: {}, buys: {}".format(y_validation.count(0), y_validation.count(1)))
+print("Dont buys: {}, buys: {}".format(np.ndarray.tolist(y_train).count(0), np.ndarray.tolist(y_train).count(1)))
+print("VALIDATION Dont buys: {}, buys: {}".format(np.ndarray.tolist(y_validation).count(0), np.ndarray.tolist(y_validation).count(1)))
+
+
+model = Sequential()
+model.add(LSTM(128, activation="relu", input_shape=(x_train.shape[1:]), return_sequences=True))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+
+model.add(LSTM(128, activation="relu", input_shape=(x_train.shape[1:]), return_sequences=True))
+model.add(Dropout(0.1))
+model.add(BatchNormalization())
+
+model.add(LSTM(128, activation="relu", input_shape=(x_train.shape[1:])))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+
+model.add(Dense(32, activation="relu"))
+model.add(Dropout(0.2))
+
+model.add(Dense(2, activation="softmax"))
+
+optimizer = tf.keras.optimizers.Adam(lr=0.001, decay=1e-6)
+
+model.compile(loss="sparse_categorical_crossentropy",
+              optimizer=optimizer,
+              metrics=["accuracy"])
+
+tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
+file_path = "RNN_Final-{epoch:02d}-{val_acc:.3f}" # unique file name that will include the epoch and the validation acc for that epoch
+checkpoint = ModelCheckpoint("models/{}.model".format(file_path, monitor="val_acc", verbose=1, save_best_only=True, mode="max")) # saves only the best ones
+
+history = model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(x_validation, y_validation), callbacks=[tensorboard, checkpoint])
